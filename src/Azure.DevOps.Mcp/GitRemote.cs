@@ -65,6 +65,19 @@ public static class GitRemote
             return FromGitPath(segments, orgFromPath: false, org: org);
         }
 
+        // Azure DevOps Server (on-premises) / custom host:
+        // https://server[/virtualDir]/{collection}/{project}/_git/{repo}
+        // The "organization" is returned as the full collection URL so the SDK routes to that base.
+        var gitIndex = Array.FindIndex(segments, s => s.Equals("_git", StringComparison.OrdinalIgnoreCase));
+        if (gitIndex >= 2 && gitIndex + 1 < segments.Length)
+        {
+            var repo = segments[gitIndex + 1];
+            var project = segments[gitIndex - 1];
+            var collectionPath = string.Join('/', segments[..(gitIndex - 1)]);
+            var collectionUrl = $"{uri.Scheme}://{uri.Authority}/{collectionPath}";
+            return new GitRemoteInfo(collectionUrl, project, repo);
+        }
+
         return null;
     }
 

@@ -70,8 +70,9 @@ Because the surface is generated from specs, regenerating against a newer API ve
   unwrapping of the `{ count, value }` collection envelope, continuation-token pagination via
   `PagedList<T>`, tolerant enum deserialization (forward-compatible with new service enum values), and
   typed `VssServiceException` errors.
-- **On-prem ready** — a `ServiceHostResolver` maps each operation's logical host (e.g. `vsrm.dev.azure.com`)
-  to a base URI, so Azure DevOps Server / sovereign clouds can be targeted by supplying host overrides.
+- **On-prem ready** — set `OrganizationUrl` (or just pass a URL as `Organization`) to target Azure
+  DevOps Server (on-premises), sovereign clouds, or any non-`dev.azure.com` host. Cloud URLs keep
+  per-service subdomain routing; on-prem collapses every service onto the collection base.
 
 ### Authentication
 
@@ -84,6 +85,16 @@ var client = new AzureDevOpsClient(new AzureDevOpsClientOptions
 {
     Organization = "contoso",
     Credential   = new BearerTokenCredential(ct => GetEntraTokenAsync(ct)),
+});
+
+// Non-dev.azure.com hosts — pass the full organization/collection URL.
+// Azure DevOps Server (on-prem) routes every service to the collection base; a full cloud URL
+// (https://dev.azure.com/contoso) or a *.visualstudio.com URL also work, as does putting the URL
+// directly in Organization.
+var onprem = new AzureDevOpsClient(new AzureDevOpsClientOptions
+{
+    OrganizationUrl = "https://tfs.contoso.com/DefaultCollection",
+    Credential      = new PatCredential(pat),
 });
 ```
 

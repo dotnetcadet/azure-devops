@@ -21,7 +21,9 @@ except the Azure DevOps REST calls the SDK already makes.
 Resolved automatically, most-specific first, so the skill is **repo-aware** with zero config:
 
 1. **Environment variables** — `AZURE_DEVOPS_ORG`, `AZURE_DEVOPS_PROJECT`, `AZURE_DEVOPS_PAT`
-   (also accepts `AZDO_ORG` / `AZDO_PROJECT` / `AZDO_PAT` / `AZURE_DEVOPS_ORG_URL`).
+   (also accepts `AZDO_ORG` / `AZDO_PROJECT` / `AZDO_PAT`). For Azure DevOps Server (on-prem) or any
+   non-`dev.azure.com` host, set `AZURE_DEVOPS_ORG_URL` to the full collection URL
+   (e.g. `https://tfs.contoso.com/DefaultCollection`).
 2. **The repo's git remote** — org/project/repository are parsed from `origin` (dev.azure.com or
    *.visualstudio.com, HTTPS or SSH).
 3. **The `azdo` CLI sign-in** — the organization/project and the (DPAPI-protected) PAT saved by the

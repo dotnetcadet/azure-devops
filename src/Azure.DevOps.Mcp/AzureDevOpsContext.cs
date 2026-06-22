@@ -97,9 +97,11 @@ public sealed class AzureDevOpsContext
 
         Profile? profile = TryLoadCliProfile();
 
+        // A full org/collection URL (env or on-prem git remote) is passed through verbatim; the SDK
+        // accepts either a bare org name or a URL and routes accordingly.
         var organization = Pick(sources, "organization",
+            ("env-url", Env("AZURE_DEVOPS_ORG_URL", "AZDO_ORG_URL")),
             ("env", Env("AZURE_DEVOPS_ORG", "AZDO_ORG")),
-            ("env-url", OrgFromUrl(Env("AZURE_DEVOPS_ORG_URL", "AZDO_ORG_URL"))),
             ("git-remote", git?.Organization),
             ("azdo-profile", profile?.Organization));
 
@@ -178,27 +180,6 @@ public sealed class AzureDevOpsContext
             {
                 return value;
             }
-        }
-
-        return null;
-    }
-
-    private static string? OrgFromUrl(string? url)
-    {
-        if (string.IsNullOrWhiteSpace(url) || !Uri.TryCreate(url, UriKind.Absolute, out var uri))
-        {
-            return null;
-        }
-
-        if (uri.Host.Equals("dev.azure.com", StringComparison.OrdinalIgnoreCase))
-        {
-            var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-            return segments.Length > 0 ? segments[0] : null;
-        }
-
-        if (uri.Host.EndsWith(".visualstudio.com", StringComparison.OrdinalIgnoreCase))
-        {
-            return uri.Host[..uri.Host.IndexOf('.')];
         }
 
         return null;

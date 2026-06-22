@@ -13,7 +13,7 @@ public static class ProfileCommands
         ConsoleUx.Heading("Add or update a connection");
 
         var organization = Prompt.Input<string>(
-            "Organization (the segment after dev.azure.com/)",
+            "Organization name, or full URL for on-prem/other (e.g. contoso, or https://tfs.contoso.com/DefaultCollection)",
             validators: new[] { Validators.Required() });
 
         var projectInput = Prompt.Input<string>("Default project (optional — Enter to skip)", defaultValue: string.Empty);

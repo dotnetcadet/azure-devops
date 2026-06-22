@@ -88,6 +88,41 @@ var known = System.Text.Json.JsonSerializer.Deserialize<Azure.DevOps.Sdk.Core.Mo
     """{ "name": "Demo", "visibility": "private" }""", Azure.DevOps.Sdk.Serialization.AzureDevOpsJson.Default);
 Check(known?.Visibility == Azure.DevOps.Sdk.Core.Models.ProjectVisibility.Private, "Known enum 'private' round-trips");
 
+// 7) Organization URL parsing: on-prem collapses all services; cloud keeps per-service subdomains.
+Console.WriteLine("Test: organization URL routing");
+var onprem = Azure.DevOps.Sdk.Http.AzureDevOpsUrl.Parse("https://tfs.contoso.com/DefaultCollection");
+Check(onprem.Organization == "DefaultCollection", "on-prem collection parsed as organization");
+Check(onprem.Resolver.Resolve("dev.azure.com") == "https://tfs.contoso.com"
+   && onprem.Resolver.Resolve("vsrm.dev.azure.com") == "https://tfs.contoso.com",
+    "on-prem collapses every service to the collection base");
+
+var onpremVdir = Azure.DevOps.Sdk.Http.AzureDevOpsUrl.Parse("https://tfs.contoso.com/tfs/DefaultCollection");
+Check(onpremVdir.Organization == "DefaultCollection"
+   && onpremVdir.Resolver.Resolve("vssps.dev.azure.com") == "https://tfs.contoso.com/tfs",
+    "on-prem with virtual directory keeps the prefix in the base");
+
+var cloudUrl = Azure.DevOps.Sdk.Http.AzureDevOpsUrl.Parse("https://dev.azure.com/contoso");
+Check(cloudUrl.Organization == "contoso"
+   && cloudUrl.Resolver.Resolve("vsrm.dev.azure.com") == "https://vsrm.dev.azure.com",
+    "cloud full URL extracts org and keeps per-service subdomains");
+
+var vsts = Azure.DevOps.Sdk.Http.AzureDevOpsUrl.Parse("https://contoso.visualstudio.com");
+Check(vsts.Organization == "contoso" && vsts.Resolver.Resolve("dev.azure.com") == "https://dev.azure.com",
+    "visualstudio.com routes via modern dev.azure.com endpoints");
+
+// 8) End-to-end on-prem request goes to the collection base, not dev.azure.com.
+Console.WriteLine("Test: on-prem client builds collection-based URLs");
+var onpremHandler = new StubHandler { Next = _ => Json("""{ "count": 0, "value": [] }""") };
+using var onpremClient = new AzureDevOpsClient(new AzureDevOpsClientOptions
+{
+    OrganizationUrl = "https://tfs.contoso.com/DefaultCollection",
+    Credential = new PatCredential("dummy"),
+    HttpClient = new HttpClient(onpremHandler),
+});
+await onpremClient.Core.Projects.ListAsync();
+Check(onpremHandler.LastUri!.ToString().StartsWith("https://tfs.contoso.com/DefaultCollection/_apis/projects"),
+    $"on-prem URL = {onpremHandler.LastUri}");
+
 Console.WriteLine();
 Console.WriteLine(failures == 0 ? "ALL SMOKE TESTS PASSED" : $"{failures} SMOKE TEST(S) FAILED");
 return failures == 0 ? 0 : 1;

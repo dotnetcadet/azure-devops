@@ -35,9 +35,24 @@ public sealed partial class AzureDevOpsClient : IDisposable
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        var hostResolver = options.HostOverrides is null
-            ? ServiceHostResolver.Default
-            : new ServiceHostResolver(options.HostOverrides);
+        // Determine host routing and the organization/collection segment. A full URL may be supplied
+        // via OrganizationUrl, or directly in Organization, to target on-prem / non-dev.azure.com hosts.
+        var organizationUrl = options.OrganizationUrl
+            ?? (AzureDevOpsUrl.IsUrl(options.Organization) ? options.Organization : null);
+
+        ServiceHostResolver hostResolver;
+        string? organization;
+        if (organizationUrl is not null)
+        {
+            (hostResolver, organization) = AzureDevOpsUrl.Parse(organizationUrl);
+        }
+        else
+        {
+            hostResolver = options.HostOverrides is null
+                ? ServiceHostResolver.Default
+                : new ServiceHostResolver(options.HostOverrides);
+            organization = options.Organization;
+        }
 
         if (options.HttpClient is not null)
         {
@@ -55,7 +70,7 @@ public sealed partial class AzureDevOpsClient : IDisposable
             _ownsAdapter = true;
         }
 
-        _pathParameters = BuildPathParameters(options.Organization, options.Project);
+        _pathParameters = BuildPathParameters(organization, options.Project);
     }
 
     private AzureDevOpsClient(IRequestAdapter adapter, IReadOnlyDictionary<string, object?> pathParameters)
