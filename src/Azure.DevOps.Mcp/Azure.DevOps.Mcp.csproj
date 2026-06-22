@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+        <RootNamespace>Azure.DevOps.Mcp</RootNamespace>
+        <AssemblyName>azure-devops-mcp</AssemblyName>
+
+        <!-- Installable as a .NET global tool so the Copilot skill works from any repository. -->
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>azure-devops-mcp</ToolCommandName>
+        <PackageId>Azure.DevOps.Mcp</PackageId>
+        <Version>1.0.0</Version>
+        <PackageOutputPath>$(MSBuildThisFileDirectory)nupkg</PackageOutputPath>
+        <Description>A local Model Context Protocol (MCP) server that lets GitHub Copilot manage Azure DevOps objects (repos, pull requests, work items, pipelines) for the current repository.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ModelContextProtocol" Version="1.4.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Azure.DevOps.Sdk\Azure.DevOps.Sdk.csproj" />
+        <ProjectReference Include="..\Azure.DevOps.Cli.Configuration\Azure.DevOps.Cli.Configuration.csproj" />
+    </ItemGroup>
+
+</Project>

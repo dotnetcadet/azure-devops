@@ -1,0 +1,12 @@
+{
+  // GitHub Copilot (VS Code, agent mode) loads this Azure DevOps "skill".
+  // The server auto-detects the organization/project/repository from this repo's git remote
+  // and reuses the credentials saved by the `azdo` CLI, so no secrets are needed here once
+  // you have run `azdo` (sign in) — or set AZURE_DEVOPS_ORG / AZURE_DEVOPS_PAT in `env` below.
+  "servers": {
+    "azure-devops": {
+      "type": "stdio",
+      "command": "azure-devops-mcp"
+    }
+  }
+}

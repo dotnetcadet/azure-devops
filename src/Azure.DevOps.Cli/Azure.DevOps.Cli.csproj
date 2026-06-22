@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>Azure.DevOps.Cli</RootNamespace>
+        <AssemblyName>azdo</AssemblyName>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Sharprompt" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Azure.DevOps.Sdk\Azure.DevOps.Sdk.csproj" />
+        <ProjectReference Include="..\Azure.DevOps.Cli.Configuration\Azure.DevOps.Cli.Configuration.csproj" />
+    </ItemGroup>
+</Project>

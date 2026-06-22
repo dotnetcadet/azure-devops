@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+        <RootNamespace>Azure.DevOps.Sdk.Generator</RootNamespace>
+        <!-- This is a build-time developer tool, not shipped in any package. -->
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+</Project>

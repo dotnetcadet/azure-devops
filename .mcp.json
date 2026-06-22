@@ -1,0 +1,11 @@
+{
+  "// note": "GitHub Copilot CLI discovers this project-level MCP config. The server reuses the azdo CLI login and the repo's git remote; set env values below to override.",
+  "mcpServers": {
+    "azure-devops": {
+      "type": "local",
+      "command": "azure-devops-mcp",
+      "tools": ["*"],
+      "env": {}
+    }
+  }
+}
