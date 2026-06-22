@@ -6,6 +6,14 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
+
+        <!-- Installable as a .NET global tool so the `azdo` command lands on PATH. -->
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>azdo</ToolCommandName>
+        <PackageId>Azure.DevOps.Cli</PackageId>
+        <Version>1.0.0</Version>
+        <PackageOutputPath>$(MSBuildThisFileDirectory)nupkg</PackageOutputPath>
+        <Description>Interactive CLI for Azure DevOps (REST 7.2) with multi-organization/multi-project profiles.</Description>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Sharprompt" />

@@ -113,9 +113,17 @@ Stream zip = await client.Git.Repositories["MyRepo"].Items.GetAsync(/* download 
 An interactive, multi-organization / multi-project console powered by
 [Sharprompt](https://github.com/shibayan/Sharprompt).
 
+Install it as a .NET global tool so the `azdo` command is on your PATH (works from any directory):
+
+```bash
+dotnet pack src/Azure.DevOps.Cli -c Release
+dotnet tool install --global --add-source ./src/Azure.DevOps.Cli/nupkg Azure.DevOps.Cli
+azdo            # launch the interactive console
 ```
-dotnet run --project src/Azure.DevOps.Cli      # or run the built `azdo` executable
-```
+
+To update later: `dotnet tool update --global --add-source ./src/Azure.DevOps.Cli/nupkg Azure.DevOps.Cli`.
+To uninstall: `dotnet tool uninstall --global Azure.DevOps.Cli`. Or, without installing, just run
+`dotnet run --project src/Azure.DevOps.Cli`.
 
 Features:
 
