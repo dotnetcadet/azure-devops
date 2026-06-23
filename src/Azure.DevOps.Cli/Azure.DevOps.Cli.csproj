@@ -3,9 +3,6 @@
         <OutputType>Exe</OutputType>
         <RootNamespace>Azure.DevOps.Cli</RootNamespace>
         <AssemblyName>azdo</AssemblyName>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <LangVersion>latest</LangVersion>
 
         <!-- Installable as a .NET global tool so the `azdo` command lands on PATH. -->
         <PackAsTool>true</PackAsTool>
