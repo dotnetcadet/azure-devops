@@ -3,15 +3,39 @@ using Azure.DevOps.Cli.Commands;
 using Azure.DevOps.Cli.Ui;
 using Sharprompt;
 
-if (args.Length > 0 && args[0] is "-h" or "--help" or "help")
+var command = args.Length > 0 ? args[0].ToLowerInvariant() : null;
+
+switch (command)
 {
-    PrintUsage();
-    return 0;
+    case "-h" or "--help" or "help":
+        PrintUsage();
+        return 0;
+    case "--version" or "version":
+        Console.WriteLine("azdo 1.0.0 — Azure DevOps CLI (REST 7.2)");
+        return 0;
 }
 
-if (args.Length > 0 && args[0] is "--version" or "version")
+var explicitInteractive = command is "-i" or "--interactive" or "interactive";
+
+// Reject unknown arguments rather than silently dropping into the interactive console.
+if (command is not null && !explicitInteractive)
 {
-    Console.WriteLine("azdo 1.0.0 — Azure DevOps CLI (REST 7.2)");
+    ConsoleUx.Error($"Unknown argument '{args[0]}'.");
+    PrintUsage();
+    return 1;
+}
+
+// Never launch the interactive console when stdin is redirected (an MCP host, a pipe, CI, …):
+// Sharprompt needs a real terminal, so reading keys from a redirected stream would hang or crash.
+if (Console.IsInputRedirected)
+{
+    if (explicitInteractive)
+    {
+        ConsoleUx.Error("Interactive mode requires a real terminal (stdin is redirected).");
+        return 1;
+    }
+
+    ConsoleUx.Info("azdo is an interactive console — run it in a terminal, or `azdo --interactive`. See `azdo --help`.");
     return 0;
 }
 
@@ -98,11 +122,14 @@ static void PrintUsage()
         azdo — Azure DevOps CLI (built on the fluent Azure.DevOps.Sdk)
 
         Usage:
-          azdo            Launch the interactive console (manage profiles and browse resources).
-          azdo --help     Show this help.
-          azdo --version  Show version information.
+          azdo                  Launch the interactive console when run in a terminal.
+          azdo -i, --interactive  Force the interactive console.
+          azdo --help           Show this help.
+          azdo --version        Show version information.
 
-        The interactive console supports multiple organizations and projects via named profiles.
-        Personal access tokens are stored per-user and protected with Windows DPAPI where available.
+        The interactive console only starts in a real terminal — when stdin is redirected (a pipe,
+        CI, or an MCP host) it prints this help instead of waiting for keyboard input.
+        It supports multiple organizations and projects via named profiles; personal access tokens
+        are stored per-user and protected with Windows DPAPI where available.
         """);
 }
